@@ -40,14 +40,14 @@ public class MineCommand extends DurkCommand {
                 return;
             }
 
-            double resetPercentage = getDouble(argAt(1));
+            double percentageToReset = getDouble(argAt(1));
 
-            if (resetPercentage < 0 || resetPercentage > 100) {
+            if (percentageToReset < 0 || percentageToReset > 100) {
                 plugin.getMessageManager().sendMessage(asPlayer(), "Incorrect percentage");
                 return;
             }
 
-            plugin.getMineManager().createMine(asPlayer(), name, resetPercentage);
+            plugin.getMineManager().createMine(asPlayer(), name, percentageToReset);
 
         } else if (isArgsLength(3)) {
 

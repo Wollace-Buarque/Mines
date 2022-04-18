@@ -1,7 +1,7 @@
 package dev.cromo29.mines.object;
 
 import dev.cromo29.durkcore.SpecificUtils.LocationUtil;
-import dev.cromo29.durkcore.hologram.Hologram;
+import dev.cromo29.durkcore.Hologram.Hologram;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class Mine {
 
     private String name;
     private Location start, end;
-    private List<MineBlock> mineBlockList;
+    private List<MineBlock> mineBlocks;
     private double resetPercentage;
     private Hologram hologram;
     private long currentBlocks, maxBlocks;
@@ -27,11 +27,11 @@ public class Mine {
         this(name, start, end, new ArrayList<>(), resetPercentage, 0, 0);
     }
 
-    public Mine(String name, Location start, Location end, List<MineBlock> mineBlockList, double resetPercentage, long currentBlocks, long maxBlocks) {
+    public Mine(String name, Location start, Location end, List<MineBlock> mineBlocks, double resetPercentage, long currentBlocks, long maxBlocks) {
         this.name = name;
         this.start = start;
         this.end = end;
-        this.mineBlockList = mineBlockList;
+        this.mineBlocks = mineBlocks;
         this.resetPercentage = resetPercentage;
         this.currentBlocks = currentBlocks;
         this.maxBlocks = maxBlocks;
@@ -62,12 +62,12 @@ public class Mine {
         this.end = end;
     }
 
-    public List<MineBlock> getMineBlockList() {
-        return mineBlockList;
+    public List<MineBlock> getMineBlocks() {
+        return mineBlocks;
     }
 
-    public void setMineBlockList(List<MineBlock> mineBlockList) {
-        this.mineBlockList = mineBlockList;
+    public void setMineBlocks(List<MineBlock> mineBlocks) {
+        this.mineBlocks = mineBlocks;
     }
 
     public double getResetPercentage() {
@@ -123,7 +123,7 @@ public class Mine {
         map.put("start", LocationUtil.serializeSimpleLocation(start));
         map.put("end", LocationUtil.serializeSimpleLocation(end));
         map.put("resetPercentage", resetPercentage);
-        map.put("blocks", mineBlockList);
+        map.put("blocks", mineBlocks);
         map.put("currentBlocks", currentBlocks);
         map.put("maxBlocks", maxBlocks);
 

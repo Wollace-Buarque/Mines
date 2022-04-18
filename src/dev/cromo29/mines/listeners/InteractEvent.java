@@ -8,7 +8,7 @@ import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.manager.MineManager;
 import dev.cromo29.mines.object.Mine;
 import dev.cromo29.mines.object.MineBlock;
-import dev.cromo29.mines.service.MineServiceImpl;
+import dev.cromo29.mines.service.IMineService;
 import dev.cromo29.mines.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -106,7 +106,7 @@ public class InteractEvent implements Listener {
 
                 if (onClick.getClickedInventory().getType() != InventoryType.PLAYER && onClick.getSlot() != 53) {
 
-                    MineBlock mineBlock = mine.getMineBlockList().stream()
+                    MineBlock mineBlock = mine.getMineBlocks().stream()
                             .filter(mineBlockFilter -> mineBlockFilter.getMaterial() == currentItem.getType() && mineBlockFilter.getData() == currentItem.getData().getData())
                             .findFirst().orElse(null);
 
@@ -129,7 +129,6 @@ public class InteractEvent implements Listener {
                         mineBlock.setPercentage(mineBlock.getPercentage() - 5);
                     }
 
-
                     inv.updateItem(onClick.getSlot(), new MakeItem(currentItem)
                             .setName(" <r>")
                             .setLore(new ArrayList<>())
@@ -145,7 +144,7 @@ public class InteractEvent implements Listener {
 
                 } else if (onClick.getClickedInventory().getType() == InventoryType.PLAYER) {
 
-                    MineBlock mineBlock = mine.getMineBlockList().stream()
+                    MineBlock mineBlock = mine.getMineBlocks().stream()
                             .filter(mineBlockFilter -> mineBlockFilter.getMaterial() == currentItem.getType() && mineBlockFilter.getData() == currentItem.getData().getData())
                             .findFirst().orElse(null);
 
@@ -168,11 +167,10 @@ public class InteractEvent implements Listener {
                             .build());
 
                     mineBlock = new MineBlock(currentItem.getType(), currentItem.getData().getData(), 0);
-                    mine.getMineBlockList().add(mineBlock);
+                    mine.getMineBlocks().add(mineBlock);
                 }
 
                 player.playSound(player.getLocation(), Sound.CLICK, 1, 1);
-
             });
 
             inv.setItem(53,
@@ -183,12 +181,12 @@ public class InteractEvent implements Listener {
                                     "",
                                     " &7Clique aqui para salvar ",
                                     "")
-                            .build(),
-                    onClick -> {
+                            .build(), onClick -> {
 
-                        if (mine.getMineBlockList().isEmpty()) {
+                        if (mine.getMineBlocks().isEmpty()) {
                             plugin.getMessageManager().sendMessage(player, "Empty blocks",
                                     "{name}", mine.getName());
+
                             plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
                             player.closeInventory();
                             return;
@@ -196,7 +194,7 @@ public class InteractEvent implements Listener {
 
                         double totalPercentage = 0;
 
-                        for (MineBlock mineBlock : mine.getMineBlockList()) {
+                        for (MineBlock mineBlock : mine.getMineBlocks()) {
                            mineBlock.setMinPercentage(totalPercentage);
 
                            totalPercentage += mineBlock.getPercentage();
@@ -210,11 +208,12 @@ public class InteractEvent implements Listener {
                             return;
                         }
 
-                        MineServiceImpl mineService = plugin.getMineService();
+                        IMineService mineService = plugin.getMineService();
 
                         if (mineService.hasMine(mine.getName())) {
                             plugin.getMessageManager().sendMessage(player, "Already created",
                                     "{name}", mine.getName());
+
                             plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
                             player.closeInventory();
                             return;
@@ -231,7 +230,6 @@ public class InteractEvent implements Listener {
 
                         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
                         player.closeInventory();
-
                     });
 
             inv.open(player);

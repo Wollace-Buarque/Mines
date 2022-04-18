@@ -3,10 +3,11 @@ package dev.cromo29.mines.manager;
 import dev.cromo29.durkcore.SpecificUtils.NumberUtil;
 import dev.cromo29.durkcore.Util.MakeItem;
 import dev.cromo29.durkcore.Util.TXT;
-import dev.cromo29.durkcore.hologram.Hologram;
-import dev.cromo29.durkcore.hologram.HologramLine;
+import dev.cromo29.durkcore.Hologram.Hologram;
+import dev.cromo29.durkcore.Hologram.HologramLine;
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.object.Mine;
+import dev.cromo29.mines.service.IMineService;
 import dev.cromo29.mines.service.MineServiceImpl;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -20,17 +21,17 @@ import java.util.Map;
 public class MineManager {
 
     private final MessageManager messageManager;
-
-    private final MineServiceImpl mineService;
+    private final IMineService mineService;
 
     private final Map<String, Mine> setupMap;
+    private final MinePlugin plugin;
 
     public MineManager() {
         this.messageManager = new MessageManager();
-
         this.mineService = new MineServiceImpl();
 
         this.setupMap = new HashMap<>();
+        this.plugin = MinePlugin.get();
     }
 
     public void createMine(Player player, String name, double resetPercentage) {
@@ -98,8 +99,7 @@ public class MineManager {
 
         String minesText = TXT.parse(TXT.createString(mines.stream().map(Mine::getName).toArray(String[]::new), 0, "<e>, <f>"));
 
-        messageManager.sendMessage(player, "Mines",
-                "{mines}", minesText);
+        messageManager.sendMessage(player, "Mines", "{mines}", minesText);
     }
 
     public void createHologram(Player player, String name) {
@@ -114,7 +114,7 @@ public class MineManager {
 
         if (mine.getHologram() != null) mine.getHologram().clear();
 
-        Hologram hologram = new Hologram(MinePlugin.get(), player.getLocation(), mine.getName().toLowerCase());
+        Hologram hologram = new Hologram(plugin, player.getLocation(), mine.getName().toLowerCase());
 
         hologram.addLine(" &fMina &d" + mine.getName() + "&f! ");
         hologram.addLine(" &fPorcentagem para resetar &d" + NumberUtil.formatNumber(mine.getCurrentPercentage()) + "% &fde &d" + NumberUtil.formatNumber(mine.getResetPercentage()) + "%&f! ");
@@ -131,7 +131,7 @@ public class MineManager {
 
     public void hologramTask() {
 
-        MinePlugin.get().getServer().getScheduler().runTaskTimerAsynchronously(MinePlugin.get(), () -> {
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 
             for (Mine mine : mineService.getMines()) {
 
@@ -148,6 +148,7 @@ public class MineManager {
                         hologramLine.setText(line);
                         break;
                     }
+
                 }
 
             }
@@ -161,7 +162,7 @@ public class MineManager {
     }
 
 
-    public MineServiceImpl getMineService() {
+    public IMineService getMineService() {
         return mineService;
     }
 

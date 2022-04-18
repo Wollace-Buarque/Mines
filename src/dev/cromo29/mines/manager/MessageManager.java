@@ -33,14 +33,12 @@ public class MessageManager {
 
         String message = messagesFile.getString("Messages." + path);
 
-        if (message == null)
-            message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
-        else {
+        if (message != null) {
             message = message.replace("&", "§")
                     .replace("{prefix}", getPrefix());
 
             messagesCache.put(path, message);
-        }
+        } else message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
 
         message = replace(message, replaces);
         sender.sendMessage(message);
@@ -58,14 +56,12 @@ public class MessageManager {
 
         String message = messagesFile.getString("Messages." + path);
 
-        if (message == null)
-            message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
-        else {
+        if (message != null) {
             message = message.replace("&", "§")
                     .replace("{prefix}", getPrefix());
 
             messagesCache.put(path, message);
-        }
+        } else message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
 
         sender.sendMessage(message);
     }
@@ -79,14 +75,12 @@ public class MessageManager {
 
         String message = messagesFile.getString("Messages." + path);
 
-        if (message == null)
-            message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
-        else {
+        if (message != null) {
             message = message.replace("&", "§")
                     .replace("{prefix}", getPrefix());
 
             messagesCache.put(path, message);
-        }
+        } else message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
 
         message = replace(message, replaces);
         return message;
@@ -100,14 +94,12 @@ public class MessageManager {
 
         String message = messagesFile.getString("Messages." + path);
 
-        if (message == null)
-            message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
-        else {
+        if (message != null) {
             message = message.replace("&", "§")
                     .replace("{prefix}", getPrefix());
 
             messagesCache.put(path, message);
-        }
+        } else message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
 
         return message;
     }

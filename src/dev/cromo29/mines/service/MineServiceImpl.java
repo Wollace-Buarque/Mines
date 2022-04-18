@@ -118,7 +118,7 @@ public class MineServiceImpl implements IMineService {
 
             if (random == 100) random -= 1;
 
-            for (MineBlock mineBlock : mine.getMineBlockList()) {
+            for (MineBlock mineBlock : mine.getMineBlocks()) {
 
                 if (random >= mineBlock.getMinPercentage() && random < mineBlock.getMaxPercentage()) {
 

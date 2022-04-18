@@ -2,6 +2,7 @@ package dev.cromo29.mines.listeners;
 
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.object.Mine;
+import dev.cromo29.mines.service.IMineService;
 import dev.cromo29.mines.service.MineServiceImpl;
 import dev.cromo29.mines.utils.Utils;
 import org.bukkit.Material;
@@ -24,7 +25,7 @@ public class BreakBlockEvent implements Listener {
 
         if (event.isCancelled()) return;
 
-        MineServiceImpl mineService = plugin.getMineService();
+        IMineService mineService = plugin.getMineService();
 
         if (mineService.getMines().isEmpty()) return;
 
@@ -40,6 +41,5 @@ public class BreakBlockEvent implements Listener {
                 .count());
 
         if (mine.getCurrentPercentage() <= mine.getResetPercentage()) mineService.resetMine(mine);
-
     }
 }
