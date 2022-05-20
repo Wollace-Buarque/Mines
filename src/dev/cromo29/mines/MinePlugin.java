@@ -7,7 +7,7 @@ import dev.cromo29.mines.listeners.InteractEvent;
 import dev.cromo29.mines.listeners.QuitEvent;
 import dev.cromo29.mines.manager.MessageManager;
 import dev.cromo29.mines.manager.MineManager;
-import dev.cromo29.mines.service.MineServiceImpl;
+import dev.cromo29.mines.service.IMineService;
 
 public class MinePlugin extends DurkPlugin {
 
@@ -20,8 +20,6 @@ public class MinePlugin extends DurkPlugin {
 
         this.registerCommand(new MineCommand(this));
         this.setListeners(new BreakBlockEvent(this), new InteractEvent(this), new QuitEvent(this));
-
-        saveDefaultConfig();
 
         getMineService().loadAll();
 
@@ -42,7 +40,7 @@ public class MinePlugin extends DurkPlugin {
     }
 
 
-    public MineServiceImpl getMineService() {
+    public IMineService getMineService() {
         return mineManager.getMineService();
     }
 }

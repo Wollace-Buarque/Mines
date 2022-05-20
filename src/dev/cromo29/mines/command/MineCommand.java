@@ -2,8 +2,10 @@ package dev.cromo29.mines.command;
 
 import dev.cromo29.durkcore.API.DurkCommand;
 import dev.cromo29.mines.MinePlugin;
+import dev.cromo29.mines.object.Mine;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MineCommand extends DurkCommand {
 
@@ -20,7 +22,7 @@ public class MineCommand extends DurkCommand {
 
             if (isArgAtIgnoreCase(0, "listar", "lista")) {
 
-                plugin.getMineManager().listMines(asPlayer());
+                plugin.getMineManager().listMines(getSender());
 
             } else sendHelp();
 
@@ -28,8 +30,37 @@ public class MineCommand extends DurkCommand {
 
             if (isArgAtIgnoreCase(0, "holograma")) {
 
+                if (isConsole()) {
+                    sendHelp();
+                    return;
+                }
+
                 plugin.getMineManager().createHologram(asPlayer(), argAt(1));
 
+                return;
+            }
+
+            if (isArgAtIgnoreCase(0, "editar")) {
+
+                if (isConsole()) {
+                    sendHelp();
+                    return;
+                }
+
+                plugin.getMineManager().editMine(asPlayer(), argAt(1));
+
+                return;
+            }
+
+            if (isArgAtIgnoreCase(0, "resetar")) {
+
+                plugin.getMineManager().resetMine(getSender(), argAt(1));
+
+                return;
+            }
+
+            if (isConsole()) {
+                sendHelp();
                 return;
             }
 
@@ -62,7 +93,7 @@ public class MineCommand extends DurkCommand {
 
                 boolean clear = getBoolean(argAt(2));
 
-                plugin.getMineManager().deleteMine(asPlayer(), name, clear);
+                plugin.getMineManager().deleteMine(getSender(), name, clear);
 
             } else sendHelp();
 
@@ -72,7 +103,7 @@ public class MineCommand extends DurkCommand {
 
     @Override
     public boolean canConsolePerform() {
-        return false;
+        return true;
     }
 
     @Override
@@ -90,9 +121,30 @@ public class MineCommand extends DurkCommand {
         return getList("mina", "minas");
     }
 
+    @Override
+    public List<String> tabComplete() {
+
+        if (isArgsLength(2)) {
+
+            if (!isArgAtIgnoreCase(0, "resetar", "editar", "deletar", "holograma"))
+                return getPlayersTabComplete(lastArg(), plugin.getServer().getOnlinePlayers());
+
+            List<String> collect = plugin.getMineService().getMines().stream().map(Mine::getName).collect(Collectors.toList());
+
+            return getTabComplete(lastArg(), collect);
+        }
+
+        return getPlayersTabComplete(lastArg(), plugin.getServer().getOnlinePlayers());
+
+    }
+
     private void sendHelp() {
         sendMessages("",
                 " <b>⁕ <f>/" + getUsedCommand() + " lista <e>- <7>Lista de minas.",
+                "",
+                " <b>⁕ <f>/" + getUsedCommand() + " resetar <nome> <e>- <7>Resetar mina.",
+                "",
+                " <b>⁕ <f>/" + getUsedCommand() + " editar <nome> <e>- <7>Editar mina.",
                 "",
                 " <b>⁕ <f>/" + getUsedCommand() + " <nome> <porcentagem> <e>- <7>Criar uma mina com porcentagem para resetar.",
                 "",

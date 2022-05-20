@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class InteractEvent implements Listener {
 
@@ -78,6 +79,10 @@ public class InteractEvent implements Listener {
                     "{z}", location.getBlockZ(),
                     "{blocks}", size);
 
+            player.getInventory().remove(new MakeItem(Material.STONE_PICKAXE)
+                    .setName(" <7>Criar mina")
+                    .build());
+
             inventory(player, mine);
         }
     }
@@ -106,9 +111,11 @@ public class InteractEvent implements Listener {
 
                 if (onClick.getClickedInventory().getType() != InventoryType.PLAYER && onClick.getSlot() != 53) {
 
-                    MineBlock mineBlock = mine.getMineBlocks().stream()
-                            .filter(mineBlockFilter -> mineBlockFilter.getMaterial() == currentItem.getType() && mineBlockFilter.getData() == currentItem.getData().getData())
-                            .findFirst().orElse(null);
+                    MineBlock mineBlock = null;
+                    for (MineBlock mineBlock1 : mine.getMineBlocks()) {
+                        if (mineBlock1.getMaterial() == currentItem.getType() && mineBlock1.getData() == currentItem.getData().getData())
+                            mineBlock = mineBlock1;
+                    }
 
                     if (mineBlock == null) {
                         plugin.getMessageManager().sendMessage(player, "Not contains block",
@@ -118,26 +125,39 @@ public class InteractEvent implements Listener {
 
                     if (onClick.isLeftClick()) {
 
-                        if (mineBlock.getPercentage() + 5 > 100) return;
+                        double increaseAmount = onClick.isShiftClick() ? 10 : 2.5;
 
-                        mineBlock.setPercentage(mineBlock.getPercentage() + 5);
+                        if (mineBlock.getPercentage() + increaseAmount > 100) {
+                            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1, 1);
+                            return;
+                        }
+
+                        mineBlock.setPercentage(mineBlock.getPercentage() + increaseAmount);
 
                     } else if (onClick.isRightClick()) {
 
-                        if (mineBlock.getPercentage() - 5 < 0) return;
+                        double increaseAmount = onClick.isShiftClick() ? 10 : 2.5;
 
-                        mineBlock.setPercentage(mineBlock.getPercentage() - 5);
+                        if (mineBlock.getPercentage() - increaseAmount < 0) {
+                            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1, 1);
+                            return;
+                        }
+
+                        mineBlock.setPercentage(mineBlock.getPercentage() - increaseAmount);
                     }
+
+                    double amountOfBlocksWirthPercentage = mineBlock.getPercentage() * mine.getMaxBlocks() / 100;
 
                     inv.updateItem(onClick.getSlot(), new MakeItem(currentItem)
                             .setName(" <r>")
                             .setLore(new ArrayList<>())
                             .addLoreList(
                                     "",
-                                    " &7Porcentagem: &f" + NumberUtil.formatNumberSimple(mineBlock.getPercentage()),
+                                    " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
                                     "",
-                                    " &7Clique com o botão &fesquerdo &7para adicionar &f5 ",
-                                    " &7Clique com o botão &fdireito &7para remover &f5 ",
+                                    " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
+                                    " &7Clique com o &fdireito &7para remover &f2,5&7% ",
+                                    " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
                                     "")
                             .build());
 
@@ -155,14 +175,16 @@ public class InteractEvent implements Listener {
                     }
 
                     inv.setInMiddle(new MakeItem(currentItem)
+                            .setAmount(1)
                             .setName(" <r>")
                             .setLore(new ArrayList<>())
                             .addLoreList(
                                     "",
-                                    " &7Porcentagem: &f0",
+                                    " &7Porcentagem: &f0&7% (Média: &f0&7) ",
                                     "",
-                                    " &7Clique com o botão &fesquerdo &7para adicionar &f5 ",
-                                    " &7Clique com o botão &fdireito &7para remover &f5 ",
+                                    " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
+                                    " &7Clique com o &fdireito &7para remover &f2,5&7% ",
+                                    " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
                                     "")
                             .build());
 
@@ -179,7 +201,10 @@ public class InteractEvent implements Listener {
                             .setName(" <r>")
                             .addLoreList(
                                     "",
-                                    " &7Clique aqui para salvar ",
+                                    " &7Clique aqui para salvar a mina &f" + mine.getName() + "&7. ",
+                                    "",
+                                    " &7Caso não tenha nenhum bloco ou a porcentagem seja igual a &f0&7, ",
+                                    " &7A operação será automáticamente cancelada. ",
                                     "")
                             .build(), onClick -> {
 
@@ -194,12 +219,20 @@ public class InteractEvent implements Listener {
 
                         double totalPercentage = 0;
 
-                        for (MineBlock mineBlock : mine.getMineBlocks()) {
-                           mineBlock.setMinPercentage(totalPercentage);
+                        Iterator<MineBlock> mineBlockIterator = mine.getMineBlocks().iterator();
+                        while (mineBlockIterator.hasNext()) {
+                            MineBlock mineBlock = mineBlockIterator.next();
 
-                           totalPercentage += mineBlock.getPercentage();
+                            if (mineBlock.getPercentage() <= 0) {
+                                mineBlockIterator.remove();
+                                continue;
+                            }
 
-                           mineBlock.setMaxPercentage(totalPercentage);
+                            mineBlock.setMinPercentage(totalPercentage);
+
+                            totalPercentage += mineBlock.getPercentage();
+
+                            mineBlock.setMaxPercentage(totalPercentage);
                         }
 
                         if (totalPercentage != 100) {
@@ -222,7 +255,7 @@ public class InteractEvent implements Listener {
                         plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
 
                         mineService.setMine(mine);
-                        mineService.saveMine(mine, mineService.getMines().size() > 5);
+                        mineService.saveMine(mine, mineService.getMines().size() > 10);
                         mineService.resetMine(mine);
 
                         plugin.getMessageManager().sendMessage(player, "Mine created",

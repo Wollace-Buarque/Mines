@@ -1,5 +1,6 @@
 package dev.cromo29.mines.service;
 
+import com.google.gson.Gson;
 import dev.cromo29.durkcore.SpecificUtils.LocationUtil;
 import dev.cromo29.durkcore.SpecificUtils.PlayerUtil;
 import dev.cromo29.durkcore.Util.GsonManager;
@@ -54,9 +55,11 @@ public class MineServiceImpl implements IMineService {
 
     @Override
     public Mine getMine(Location location) {
-        return mineMap.values().stream()
-                .filter(mine -> Utils.containsLocationBetwen(location, mine.getStart(), mine.getEnd()))
-                .findFirst().orElse(null);
+        for (Mine mine : getMines()) {
+            if (Utils.containsLocationBetwen(location, mine.getStart(), mine.getEnd())) return mine;
+        }
+
+        return null;
     }
 
     @Override
@@ -66,14 +69,19 @@ public class MineServiceImpl implements IMineService {
 
     @Override
     public boolean hasMine(Location location) {
-        return mineMap.values().stream()
-                .anyMatch(mine -> Utils.containsLocationBetwen(location, mine.getStart(), mine.getEnd()));
+        return getMine(location) != null;
     }
 
     @Override
     public void saveMine(Mine mine, boolean async) {
 
         if (async) {
+
+            if (!MinePlugin.get().isEnabled()) {
+                saveMine(mine, false);
+                return;
+            }
+
             TXT.runAsynchronously(MinePlugin.get(), () -> {
                 storageFile.put(mine.getName().toLowerCase(), mine.getData());
                 storageFile.save();
@@ -89,6 +97,12 @@ public class MineServiceImpl implements IMineService {
     public void removeMine(Mine mine, boolean async) {
 
         if (async) {
+
+            if (!MinePlugin.get().isEnabled()) {
+                removeMine(mine, false);
+                return;
+            }
+
             TXT.runAsynchronously(MinePlugin.get(), () -> {
                 storageFile.remove(mine.getName().toLowerCase());
                 storageFile.save();
@@ -114,7 +128,7 @@ public class MineServiceImpl implements IMineService {
         WorkloadThread workloadThread = new WorkloadThread();
 
         for (Block block : blocks) {
-            int random = new Random().nextInt(100) + 1;
+            double random = new Random().nextDouble() * 100;
 
             if (random == 100) random -= 1;
 
@@ -181,36 +195,23 @@ public class MineServiceImpl implements IMineService {
 
                 Map<String, Object> map = storageFile.get(mineName).asMap();
 
-                String name = (String) map.get("name");
-                Location start = LocationUtil.unserializeLocation((String) map.get("start"));
-                Location end = LocationUtil.unserializeLocation((String) map.get("end"));
+                String name = map.get("name").toString();
+                Location start = LocationUtil.unserializeLocation(map.get("start").toString());
+                Location end = LocationUtil.unserializeLocation(map.get("end").toString());
                 double resetPercentage = (double) map.get("resetPercentage");
                 double currentBlocks = (double) map.get("currentBlocks");
                 double maxBlocks = (double) map.get("maxBlocks");
 
-                List<MineBlock> blocks = new ArrayList<>();
-
-                for (Object object : (List<Object>) map.get("blocks")) {
-                    String[] splitedString = object.toString().split(",");
-
-                    Material material = Material.getMaterial(splitedString[0].split("=")[1]);
-                    byte data = (byte) Double.parseDouble(splitedString[1].split("=")[1]);
-                    double percentage = Double.parseDouble(splitedString[2].split("=")[1]);
-                    double minPercentage = Double.parseDouble(splitedString[3].split("=")[1]);
-                    double maxPercentage = Double.parseDouble(splitedString[4].split("=")[1].replace("}", ""));
-
-                    MineBlock mineBlock = new MineBlock(material, data, percentage);
-                    mineBlock.setMinPercentage(minPercentage);
-                    mineBlock.setMaxPercentage(maxPercentage);
-
-                    blocks.add(mineBlock);
-                }
+                List<MineBlock> blocks = new LinkedList<>(stringToArray(map.get("blocks").toString(), MineBlock[].class));
 
                 Mine mine = new Mine(name, start, end, blocks, resetPercentage, (long) currentBlocks, (long) maxBlocks);
+
                 setMine(mine);
 
             } catch (Exception exception) {
                 MinePlugin.get().log(" <c>Erro ao carregar mina: " + mineName);
+
+                exception.printStackTrace();
             }
         }
 
@@ -251,5 +252,9 @@ public class MineServiceImpl implements IMineService {
             }
         }.runTaskTimer(plugin, 0, 1);
 
+    }
+
+    private <T> List<T> stringToArray(String s, Class<T[]> clazz) {
+        return Arrays.asList(new Gson().fromJson(s, clazz));
     }
 }

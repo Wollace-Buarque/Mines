@@ -1,13 +1,10 @@
 package dev.cromo29.mines.object;
 
-import dev.cromo29.durkcore.SpecificUtils.LocationUtil;
 import dev.cromo29.durkcore.Hologram.Hologram;
+import dev.cromo29.durkcore.SpecificUtils.LocationUtil;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Mine {
 
@@ -20,11 +17,11 @@ public class Mine {
     private boolean reseting;
 
     public Mine(String name, double resetPercentage) {
-        this(name, null, null, new ArrayList<>(), resetPercentage, 0, 0);
+        this(name, null, null, new LinkedList<>(), resetPercentage, 0, 0);
     }
 
     public Mine(String name, Location start, Location end, double resetPercentage) {
-        this(name, start, end, new ArrayList<>(), resetPercentage, 0, 0);
+        this(name, start, end, new LinkedList<>(), resetPercentage, 0, 0);
     }
 
     public Mine(String name, Location start, Location end, List<MineBlock> mineBlocks, double resetPercentage, long currentBlocks, long maxBlocks) {
@@ -111,7 +108,7 @@ public class Mine {
     }
 
     public double getCurrentPercentage() {
-        double maxBlocks = this.maxBlocks == 0 ?  1 : this.maxBlocks;
+        double maxBlocks = this.maxBlocks == 0 ? 1 : this.maxBlocks;
 
         return (currentBlocks / maxBlocks) * 100;
     }
@@ -123,9 +120,9 @@ public class Mine {
         map.put("start", LocationUtil.serializeSimpleLocation(start));
         map.put("end", LocationUtil.serializeSimpleLocation(end));
         map.put("resetPercentage", resetPercentage);
-        map.put("blocks", mineBlocks);
         map.put("currentBlocks", currentBlocks);
         map.put("maxBlocks", maxBlocks);
+        map.put("blocks", mineBlocks);
 
         return map;
     }

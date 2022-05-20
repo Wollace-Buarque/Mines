@@ -12,11 +12,13 @@ Messages:
   Creation cancelled: "{prefix} &eVocê digitou o comando novamente e a criação foi cancelada!"
   Mine created: "{prefix} &eVocê criou a mina &f{name}&e!"
   Mine deleted: "{prefix} &eVocê deletou a mina &f{name}&e!"
+  Mine reseted: "{prefix} &eVocê resetou a mina &f{name}&e!"
+  Mine changed: "{prefix} &eVocê alterou a mina &f{name}&e!"
 
   Wrong world: "{prefix} &cVocê precisa estar no mesmo mundo da primeira localização!"
 
   First location: "{prefix} &eVocê setou a primeira localização!"
-  Second location: "{prefix} &eVocê setou a segunda localização! &8({blocks}) blocos"
+  Second location: "{prefix} &eVocê setou a segunda localização! &8({blocks} blocos)"
 
   Blocks inventory: "{prefix} &eAbrindo inventário para você por os blocos da mina!"
 

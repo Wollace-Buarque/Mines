@@ -8,7 +8,7 @@ import java.util.List;
 public interface IMineService {
 
     /**
-     * Set the Mine in map.
+     * Set Mine in map.
      * @param mine object
      */
     void setMine(Mine mine);
@@ -25,7 +25,7 @@ public interface IMineService {
     List<Mine> getMines();
 
     /**
-     * Get the Mine by name from map.
+     * Get Mine by name from map.
      * @param name from Mine.
      */
     Mine getMine(String name);
@@ -37,14 +37,14 @@ public interface IMineService {
     Mine getMine(Location location);
 
     /**
-     * Check if exists an Mine with name.
-     * @param name to check if exists an Mine.
+     * Check if exists a Mine with name.
+     * @param name to check if exists a Mine.
      */
     boolean hasMine(String name);
 
     /**
-     * Check if exists an mine at location.
-     * @param location to check if exists an Mine.
+     * Check if exists a mine at location.
+     * @param location to check if exists a Mine.
      */
     boolean hasMine(Location location);
 
