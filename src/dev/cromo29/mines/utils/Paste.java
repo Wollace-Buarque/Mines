@@ -10,7 +10,7 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
  * <p>
  * * Where I got these ideas:
  *
- * @See https://www.spigotmc.org/threads/methods-for-changing-massive-amount-of-blocks-up-to-14m-blocks-s.395868/
+ * @See <a href="https://www.spigotmc.org/threads/methods-for-changing-massive-amount-of-blocks-up-to-14m-blocks-s.395868/">Github</a>
  */
 public class Paste {
     public static int test = 10;

@@ -1,8 +1,7 @@
-name: Mines
+name: FlexMines
 main: dev.cromo29.mines.MinePlugin
 version: 1.0.0
 author: Cromo29
 
 depend:
   - DurkCore
-  - Vault

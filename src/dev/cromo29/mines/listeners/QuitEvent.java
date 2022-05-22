@@ -15,6 +15,6 @@ public class QuitEvent implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        plugin.getMineManager().getSetupMap().remove(event.getPlayer().getName().toLowerCase());
+        plugin.getMineManager().getSetupMap().remove(event.getPlayer().getName());
     }
 }

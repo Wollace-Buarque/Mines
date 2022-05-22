@@ -9,9 +9,7 @@ import java.util.UUID;
 public class PlacableBlock implements Workdload {
 
     private final UUID worldID;
-    private final int blockX;
-    private final int blockY;
-    private final int blockZ;
+    private final int blockX, blockY, blockZ;
     private final Material type;
     private final byte data;
 

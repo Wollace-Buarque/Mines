@@ -1,6 +1,6 @@
 package dev.cromo29.mines;
 
-import dev.cromo29.durkcore.API.DurkPlugin;
+import dev.cromo29.durkcore.api.DurkPlugin;
 import dev.cromo29.mines.command.MineCommand;
 import dev.cromo29.mines.listeners.BreakBlockEvent;
 import dev.cromo29.mines.listeners.InteractEvent;

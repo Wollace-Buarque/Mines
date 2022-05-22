@@ -1,7 +1,7 @@
 package dev.cromo29.mines.object;
 
-import dev.cromo29.durkcore.Hologram.Hologram;
-import dev.cromo29.durkcore.SpecificUtils.LocationUtil;
+import dev.cromo29.durkcore.hologram.Hologram;
+import dev.cromo29.durkcore.specificutils.LocationUtil;
 import org.bukkit.Location;
 
 import java.util.*;
@@ -114,7 +114,7 @@ public class Mine {
     }
 
     public Map<String, Object> getData() {
-        final Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
         map.put("name", name);
         map.put("start", LocationUtil.serializeSimpleLocation(start));

@@ -1,10 +1,10 @@
 package dev.cromo29.mines.service;
 
 import com.google.gson.Gson;
-import dev.cromo29.durkcore.SpecificUtils.LocationUtil;
-import dev.cromo29.durkcore.SpecificUtils.PlayerUtil;
-import dev.cromo29.durkcore.Util.GsonManager;
-import dev.cromo29.durkcore.Util.TXT;
+import dev.cromo29.durkcore.specificutils.LocationUtil;
+import dev.cromo29.durkcore.specificutils.PlayerUtil;
+import dev.cromo29.durkcore.util.GsonManager;
+import dev.cromo29.durkcore.util.TXT;
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.blocks.PlacableBlock;
 import dev.cromo29.mines.blocks.WorkloadThread;
@@ -209,9 +209,7 @@ public class MineServiceImpl implements IMineService {
                 setMine(mine);
 
             } catch (Exception exception) {
-                MinePlugin.get().log(" <c>Erro ao carregar mina: " + mineName);
-
-                exception.printStackTrace();
+                MinePlugin.get().log(" <c>Erro ao carregar mina: <f>" + mineName);
             }
         }
 

@@ -1,8 +1,8 @@
 package dev.cromo29.mines.manager;
 
 import com.google.common.collect.ImmutableMap;
-import dev.cromo29.durkcore.Util.ConfigManager;
-import dev.cromo29.durkcore.Util.TXT;
+import dev.cromo29.durkcore.util.ConfigManager;
+import dev.cromo29.durkcore.util.TXT;
 import dev.cromo29.mines.MinePlugin;
 import org.bukkit.command.CommandSender;
 
@@ -31,17 +31,7 @@ public class MessageManager {
             return;
         }
 
-        String message = messagesFile.getString("Messages." + path);
-
-        if (message != null) {
-            message = message.replace("&", "§")
-                    .replace("{prefix}", getPrefix());
-
-            messagesCache.put(path, message);
-        } else message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
-
-        message = replace(message, replaces);
-        sender.sendMessage(message);
+        sender.sendMessage(getMessage(path, replaces));
     }
 
     /*
@@ -54,16 +44,7 @@ public class MessageManager {
             return;
         }
 
-        String message = messagesFile.getString("Messages." + path);
-
-        if (message != null) {
-            message = message.replace("&", "§")
-                    .replace("{prefix}", getPrefix());
-
-            messagesCache.put(path, message);
-        } else message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
-
-        sender.sendMessage(message);
+        sender.sendMessage(getMessage(path));
     }
 
     /*
@@ -73,23 +54,14 @@ public class MessageManager {
 
         if (messagesCache.containsKey(path)) return replace(messagesCache.get(path), replaces);
 
-        String message = messagesFile.getString("Messages." + path);
-
-        if (message != null) {
-            message = message.replace("&", "§")
-                    .replace("{prefix}", getPrefix());
-
-            messagesCache.put(path, message);
-        } else message = TXT.parse(getPrefix() + " <c>Mensagem não encontrada.");
-
-        message = replace(message, replaces);
-        return message;
+        return replace(getMessage(path), replaces);
     }
 
     /*
      * Pega uma mensagem da config com replaces.
      */
     public String getMessage(String path) {
+
         if (messagesCache.containsKey(path)) return messagesCache.get(path);
 
         String message = messagesFile.getString("Messages." + path);
@@ -112,7 +84,7 @@ public class MessageManager {
 
         String prefix = messagesFile.getString("Messages.Prefix");
 
-        if (prefix == null) prefix = "&8&l[&b29Mines&8&l]";
+        if (prefix == null) prefix = "&8&l[&b29Chat&8&l]";
 
         prefix = prefix.replace("&", "§");
 
@@ -139,7 +111,7 @@ public class MessageManager {
      * Adicionar uma mensagem customizada com prefix.
      */
     public void putMessage(String path, String message, boolean prefix) {
-        messagesCache.put(path, getPrefix() + message);
+        messagesCache.put(path, prefix ? getPrefix() + message : message);
     }
 
     /*

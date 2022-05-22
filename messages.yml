@@ -14,6 +14,7 @@ Messages:
   Mine deleted: "{prefix} &eVocê deletou a mina &f{name}&e!"
   Mine reseted: "{prefix} &eVocê resetou a mina &f{name}&e!"
   Mine changed: "{prefix} &eVocê alterou a mina &f{name}&e!"
+  Reset in progress: "{prefix} &cA mina &f{name} &cjá está sendo resetada!"
 
   Wrong world: "{prefix} &cVocê precisa estar no mesmo mundo da primeira localização!"
 

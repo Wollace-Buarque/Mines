@@ -1,11 +1,11 @@
 package dev.cromo29.mines.manager;
 
-import dev.cromo29.durkcore.Hologram.Hologram;
-import dev.cromo29.durkcore.Hologram.HologramLine;
-import dev.cromo29.durkcore.Inventory.Inv;
-import dev.cromo29.durkcore.SpecificUtils.NumberUtil;
-import dev.cromo29.durkcore.Util.MakeItem;
-import dev.cromo29.durkcore.Util.TXT;
+import dev.cromo29.durkcore.hologram.Hologram;
+import dev.cromo29.durkcore.hologram.HologramLine;
+import dev.cromo29.durkcore.inventory.Inv;
+import dev.cromo29.durkcore.specificutils.NumberUtil;
+import dev.cromo29.durkcore.util.MakeItem;
+import dev.cromo29.durkcore.util.TXT;
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.object.Mine;
 import dev.cromo29.mines.object.MineBlock;
@@ -38,9 +38,9 @@ public class MineManager {
 
     public void createMine(Player player, String name, double resetPercentage) {
 
-        if (setupMap.containsKey(player.getName().toLowerCase())) {
+        if (setupMap.containsKey(player.getName())) {
             messageManager.sendMessage(player, "Creation cancelled");
-            setupMap.remove(player.getName().toLowerCase());
+            setupMap.remove(player.getName());
             return;
         }
 
@@ -63,7 +63,7 @@ public class MineManager {
 
         player.updateInventory();
 
-        setupMap.put(player.getName().toLowerCase(), new Mine(name, resetPercentage));
+        setupMap.put(player.getName(), new Mine(name, resetPercentage));
 
         messageManager.sendMessage(player, "Started creation",
                 "{name}", name);
@@ -112,7 +112,15 @@ public class MineManager {
             return;
         }
 
-        mineService.resetMine(mineService.getMine(mineName));
+        Mine mine = mineService.getMine(mineName);
+
+        if (mine.isReseting()) {
+            messageManager.sendMessage(sender, "Reset in progress",
+                    "{name}", mineName);
+            return;
+        }
+
+        mineService.resetMine(mine);
 
         messageManager.sendMessage(sender, "Mine reseted",
                 "{name}", mineName);
@@ -262,7 +270,7 @@ public class MineManager {
                         plugin.getMessageManager().sendMessage(player, "Empty blocks",
                                 "{name}", mine.getName());
 
-                        plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
+                        plugin.getMineManager().getSetupMap().remove(player.getName());
                         player.closeInventory();
                         return;
                     }

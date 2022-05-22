@@ -1,9 +1,9 @@
 package dev.cromo29.mines.listeners;
 
-import dev.cromo29.durkcore.Inventory.Inv;
-import dev.cromo29.durkcore.SpecificUtils.NumberUtil;
-import dev.cromo29.durkcore.Util.MakeItem;
-import dev.cromo29.durkcore.Util.TXT;
+import dev.cromo29.durkcore.inventory.Inv;
+import dev.cromo29.durkcore.specificutils.NumberUtil;
+import dev.cromo29.durkcore.util.MakeItem;
+import dev.cromo29.durkcore.util.TXT;
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.manager.MineManager;
 import dev.cromo29.mines.object.Mine;
@@ -45,11 +45,11 @@ public class InteractEvent implements Listener {
         Player player = event.getPlayer();
         Location location = event.getClickedBlock().getLocation();
 
-        if (!mineManager.getSetupMap().containsKey(player.getName().toLowerCase())) return;
+        if (!mineManager.getSetupMap().containsKey(player.getName())) return;
 
         event.setCancelled(true);
 
-        Mine mine = mineManager.getSetupMap().get(player.getName().toLowerCase());
+        Mine mine = mineManager.getSetupMap().get(player.getName());
 
         if (mine.getStart() == null) {
             mine.setStart(location);
@@ -98,7 +98,7 @@ public class InteractEvent implements Listener {
 
             inv.addCloseHandler(onClose -> {
 
-                plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
+                plugin.getMineManager().getSetupMap().remove(player.getName());
 
             });
 
@@ -212,7 +212,7 @@ public class InteractEvent implements Listener {
                             plugin.getMessageManager().sendMessage(player, "Empty blocks",
                                     "{name}", mine.getName());
 
-                            plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
+                            plugin.getMineManager().getSetupMap().remove(player.getName());
                             player.closeInventory();
                             return;
                         }
@@ -247,12 +247,12 @@ public class InteractEvent implements Listener {
                             plugin.getMessageManager().sendMessage(player, "Already created",
                                     "{name}", mine.getName());
 
-                            plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
+                            plugin.getMineManager().getSetupMap().remove(player.getName());
                             player.closeInventory();
                             return;
                         }
 
-                        plugin.getMineManager().getSetupMap().remove(player.getName().toLowerCase());
+                        plugin.getMineManager().getSetupMap().remove(player.getName());
 
                         mineService.setMine(mine);
                         mineService.saveMine(mine, mineService.getMines().size() > 10);

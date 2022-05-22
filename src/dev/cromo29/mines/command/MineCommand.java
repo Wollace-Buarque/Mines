@@ -1,6 +1,6 @@
 package dev.cromo29.mines.command;
 
-import dev.cromo29.durkcore.API.DurkCommand;
+import dev.cromo29.durkcore.api.DurkCommand;
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.object.Mine;
 
@@ -139,7 +139,8 @@ public class MineCommand extends DurkCommand {
     }
 
     private void sendHelp() {
-        sendMessages("",
+        sendMessages(
+                "",
                 " <b>⁕ <f>/" + getUsedCommand() + " lista <e>- <7>Lista de minas.",
                 "",
                 " <b>⁕ <f>/" + getUsedCommand() + " resetar <nome> <e>- <7>Resetar mina.",
