@@ -20,8 +20,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 public class InteractEvent implements Listener {
 
@@ -148,17 +147,24 @@ public class InteractEvent implements Listener {
 
                     double amountOfBlocksWirthPercentage = mineBlock.getPercentage() * mine.getMaxBlocks() / 100;
 
+                    List<String> lore = new LinkedList<>(Arrays.asList("",
+                            " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
+                            "",
+                            " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
+                            " &7Clique com o &fdireito &7para remover &f2,5&7% ",
+                            " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
+                            ""));
+
+                    if (mineBlock.getPercentage() <= 0) {
+                        lore.addAll(Arrays.asList(
+                                "",
+                                " &cCaso a porcentagem continue em 0 esse bloco será removido! ",
+                                ""));
+                    }
+
                     inv.updateItem(onClick.getSlot(), new MakeItem(currentItem)
                             .setName(" <r>")
-                            .setLore(new ArrayList<>())
-                            .addLoreList(
-                                    "",
-                                    " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
-                                    "",
-                                    " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
-                                    " &7Clique com o &fdireito &7para remover &f2,5&7% ",
-                                    " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
-                                    "")
+                            .setLore(lore)
                             .build());
 
 
@@ -185,6 +191,8 @@ public class InteractEvent implements Listener {
                                     " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
                                     " &7Clique com o &fdireito &7para remover &f2,5&7% ",
                                     " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
+                                    "",
+                                    " &cCaso a porcentagem continue em 0 esse bloco será removido! ",
                                     "")
                             .build());
 

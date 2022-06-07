@@ -1,6 +1,7 @@
 package dev.cromo29.mines.service;
 
 import com.google.gson.Gson;
+import dev.cromo29.durkcore.hologram.Hologram;
 import dev.cromo29.durkcore.specificutils.LocationUtil;
 import dev.cromo29.durkcore.specificutils.PlayerUtil;
 import dev.cromo29.durkcore.util.GsonManager;
@@ -202,9 +203,18 @@ public class MineServiceImpl implements IMineService {
                 double currentBlocks = (double) map.get("currentBlocks");
                 double maxBlocks = (double) map.get("maxBlocks");
 
-                List<MineBlock> blocks = new LinkedList<>(stringToArray(map.get("blocks").toString(), MineBlock[].class));
+                List<MineBlock> blocks = new LinkedList<>(Arrays.asList(new Gson().fromJson(map.get("blocks").toString(), MineBlock[].class)));
 
                 Mine mine = new Mine(name, start, end, blocks, resetPercentage, (long) currentBlocks, (long) maxBlocks);
+
+                if (map.get("hologram") != null) {
+                    Hologram hologram = new Hologram(MinePlugin.get(), LocationUtil.unserializeLocation(map.get("hologram").toString()), mineName.toLowerCase());
+
+                    ((List<String>) map.get("hologramLines")).forEach(hologram::addLine);
+
+                    hologram.setRemoveOnDisable(true);
+                    hologram.setup();
+                }
 
                 setMine(mine);
 
@@ -250,9 +260,5 @@ public class MineServiceImpl implements IMineService {
             }
         }.runTaskTimer(plugin, 0, 1);
 
-    }
-
-    private <T> List<T> stringToArray(String s, Class<T[]> clazz) {
-        return Arrays.asList(new Gson().fromJson(s, clazz));
     }
 }

@@ -141,25 +141,30 @@ public class MineManager {
         Inv inv = new Inv(54, "Blocos da mina:");
         inv.setIgnorePlayerInventoryClick(false, true);
 
-        mine.getMineBlocks().forEach(mineBlock -> {
+        final List<MineBlock> toCheckAtEnd = mine.getMineBlocks();
 
-            double amountOfBlocksWirthPercentage = mineBlock.getPercentage() * mine.getMaxBlocks() / 100;
+        mine.getMineBlocks()
+                .stream()
+                .sorted(Comparator.comparing(MineBlock::getPercentage).reversed())
+                .forEach(mineBlock -> {
 
-            inv.setInMiddle(new MakeItem(mineBlock.getMaterial())
-                    .setData(mineBlock.getData())
-                    .setName(" <r>")
-                    .setLore(new ArrayList<>())
-                    .addLoreList(
-                            "",
-                            " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
-                            "",
-                            " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
-                            " &7Clique com o &fdireito &7para remover &f2,5&7% ",
-                            " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
-                            "")
-                    .build());
+                    double amountOfBlocksWirthPercentage = mineBlock.getPercentage() * mine.getMaxBlocks() / 100;
 
-        });
+                    inv.setInMiddle(new MakeItem(mineBlock.getMaterial())
+                            .setData(mineBlock.getData())
+                            .setName(" <r>")
+                            .setLore(new ArrayList<>())
+                            .addLoreList(
+                                    "",
+                                    " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
+                                    "",
+                                    " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
+                                    " &7Clique com o &fdireito &7para remover &f2,5&7% ",
+                                    " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
+                                    "")
+                            .build());
+
+                });
 
         inv.addClickHandler(onClick -> {
 
@@ -207,19 +212,25 @@ public class MineManager {
 
                 double amountOfBlocksWirthPercentage = mineBlock.getPercentage() * mine.getMaxBlocks() / 100;
 
+                List<String> lore = new LinkedList<>(Arrays.asList("",
+                        " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
+                        "",
+                        " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
+                        " &7Clique com o &fdireito &7para remover &f2,5&7% ",
+                        " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
+                        ""));
+
+                if (mineBlock.getPercentage() <= 0) {
+                    lore.addAll(Arrays.asList(
+                            "",
+                            " &cCaso a porcentagem continue em 0 esse bloco será removido! ",
+                            ""));
+                }
+
                 inv.updateItem(onClick.getSlot(), new MakeItem(currentItem)
                         .setName(" <r>")
-                        .setLore(new ArrayList<>())
-                        .addLoreList(
-                                "",
-                                " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
-                                "",
-                                " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
-                                " &7Clique com o &fdireito &7para remover &f2,5&7% ",
-                                " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
-                                "")
+                        .setLore(lore)
                         .build());
-
 
             } else if (onClick.getClickedInventory().getType() == InventoryType.PLAYER) {
 
@@ -243,6 +254,8 @@ public class MineManager {
                                 " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
                                 " &7Clique com o &fdireito &7para remover &f2,5&7% ",
                                 " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
+                                "",
+                                " &cCaso a porcentagem continue em 0 esse bloco será removido! ",
                                 "")
                         .build());
 
@@ -299,8 +312,10 @@ public class MineManager {
                         return;
                     }
 
-                    mineService.saveMine(mine, mineService.getMines().size() > 10);
-                    mineService.resetMine(mine);
+                    if (!mine.getMineBlocks().equals(toCheckAtEnd)) {
+                        mineService.saveMine(mine, mineService.getMines().size() > 10);
+                        mineService.resetMine(mine);
+                    }
 
                     plugin.getMessageManager().sendMessage(player, "Mine changed",
                             "{name}", mine.getName());
@@ -324,7 +339,10 @@ public class MineManager {
 
         Mine mine = mineService.getMine(mineName);
 
-        if (mine.getHologram() != null) mine.getHologram().clear();
+        if (mine.getHologram() != null) {
+            mine.getHologram().clear();
+            mine.getHologram().getHologramLines().forEach(hologramLine -> hologramLine.getArmorStand().remove());
+        }
 
         Hologram hologram = new Hologram(plugin, player.getLocation(), mine.getName().toLowerCase());
 
@@ -366,7 +384,7 @@ public class MineManager {
 
             }
 
-        }, 140, 100);
+        }, 140, 20);
 
     }
 

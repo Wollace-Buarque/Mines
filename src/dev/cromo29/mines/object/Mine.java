@@ -5,6 +5,7 @@ import dev.cromo29.durkcore.specificutils.LocationUtil;
 import org.bukkit.Location;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Mine {
 
@@ -123,6 +124,14 @@ public class Mine {
         map.put("currentBlocks", currentBlocks);
         map.put("maxBlocks", maxBlocks);
         map.put("blocks", mineBlocks);
+
+        if (hologram != null) {
+            map.put("hologram", LocationUtil.serializeSimpleLocation(hologram.getLocation()));
+            map.put("hologramLines", hologram.getHologramLines()
+                    .stream()
+                    .map(hologramLine -> hologramLine.getText().replace("§", "&"))
+                    .collect(Collectors.toList()));
+        }
 
         return map;
     }
