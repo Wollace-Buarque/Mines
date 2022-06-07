@@ -59,6 +59,13 @@ public class MineCommand extends DurkCommand {
                 return;
             }
 
+            if (isArgAtIgnoreCase(0, "deletar")) {
+
+                plugin.getMineManager().deleteMine(getSender(), argAt(1), true);
+
+                return;
+            }
+
             if (isConsole()) {
                 sendHelp();
                 return;
@@ -141,17 +148,17 @@ public class MineCommand extends DurkCommand {
     private void sendHelp() {
         sendMessages(
                 "",
-                " <b>⁕ <f>/" + getUsedCommand() + " lista <e>- <7>Lista de minas.",
+                " <9>■ <f>/" + getUsedCommand() + " lista <e>- <7>Lista de minas.",
                 "",
-                " <b>⁕ <f>/" + getUsedCommand() + " resetar <nome> <e>- <7>Resetar mina.",
+                " <9>■ <f>/" + getUsedCommand() + " resetar <nome> <e>- <7>Resetar mina.",
                 "",
-                " <b>⁕ <f>/" + getUsedCommand() + " editar <nome> <e>- <7>Editar mina.",
+                " <9>■ <f>/" + getUsedCommand() + " editar <nome> <e>- <7>Editar mina.",
                 "",
-                " <b>⁕ <f>/" + getUsedCommand() + " <nome> <porcentagem> <e>- <7>Criar uma mina com porcentagem para resetar.",
+                " <9>■ <f>/" + getUsedCommand() + " <nome> <porcentagem> <e>- <7>Criar uma mina com porcentagem para resetar.",
                 "",
-                " <b>⁕ <f>/" + getUsedCommand() + " holograma <mina> <e>- <7>Criar um holograma para a mina.",
+                " <9>■ <f>/" + getUsedCommand() + " holograma <mina> <e>- <7>Criar um holograma para a mina.",
                 "",
-                " <b>⁕ <f>/" + getUsedCommand() + " deletar <nome> <true/false> <e>- <7>Deletar mina e limpar blocos.",
+                " <9>■ <f>/" + getUsedCommand() + " deletar <nome> <true/false> <e>- <7>Deletar mina e limpar blocos.",
                 "");
     }
 }

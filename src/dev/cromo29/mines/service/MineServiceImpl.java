@@ -129,20 +129,11 @@ public class MineServiceImpl implements IMineService {
         WorkloadThread workloadThread = new WorkloadThread();
 
         for (Block block : blocks) {
-            double random = new Random().nextDouble() * 100;
+            MineBlock mineBlock = getSortedMineBlock(mine);
 
-            if (random == 100) random -= 1;
+            if (block.getType() == mineBlock.getMaterial() && block.getData() == mineBlock.getData()) continue;
 
-            for (MineBlock mineBlock : mine.getMineBlocks()) {
-
-                if (random >= mineBlock.getMinPercentage() && random < mineBlock.getMaxPercentage()) {
-
-                    if (block.getType() == mineBlock.getMaterial() && block.getData() == mineBlock.getData()) break;
-
-                    workloadThread.addLoad(new PlacableBlock(block.getWorld().getUID(), block.getX(), block.getY(), block.getZ(), mineBlock.getMaterial(), mineBlock.getData()));
-                    break;
-                }
-            }
+            workloadThread.addLoad(new PlacableBlock(block.getWorld().getUID(), block.getX(), block.getY(), block.getZ(), mineBlock.getMaterial(), mineBlock.getData()));
         }
 
         new BukkitRunnable() {
@@ -260,5 +251,27 @@ public class MineServiceImpl implements IMineService {
             }
         }.runTaskTimer(plugin, 0, 1);
 
+    }
+
+    private MineBlock getSortedMineBlock(Mine mine) {
+        double totalPercentage = 0;
+
+        for (MineBlock mineBlock : mine.getMineBlocks()) {
+            totalPercentage += mineBlock.getPercentage();
+        }
+
+        int sorted = -1;
+        double random = Math.random() * totalPercentage;
+
+        for (int index = 0; index < mine.getMineBlocks().size(); index++) {
+            random -= mine.getMineBlocks().get(index).getPercentage();
+
+            if (random <= 0) {
+                sorted = index;
+                break;
+            }
+        }
+
+        return mine.getMineBlocks().get(sorted);
     }
 }

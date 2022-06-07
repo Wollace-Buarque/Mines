@@ -5,7 +5,7 @@ import dev.cromo29.durkcore.specificutils.NumberUtil;
 import dev.cromo29.durkcore.util.MakeItem;
 import dev.cromo29.durkcore.util.TXT;
 import dev.cromo29.mines.MinePlugin;
-import dev.cromo29.mines.manager.MineManager;
+import dev.cromo29.mines.managers.MineManager;
 import dev.cromo29.mines.object.Mine;
 import dev.cromo29.mines.object.MineBlock;
 import dev.cromo29.mines.service.IMineService;
@@ -88,7 +88,8 @@ public class InteractEvent implements Listener {
 
     public void inventory(Player player, Mine mine) {
 
-        plugin.getMessageManager().sendMessage(player, "Blocks inventory");
+        plugin.getMessageManager().sendMessage(player, "Blocks inventory",
+                "{name}", mine.getName());
 
         TXT.runLater(plugin, 40, () -> {
 
@@ -97,7 +98,12 @@ public class InteractEvent implements Listener {
 
             inv.addCloseHandler(onClose -> {
 
-                plugin.getMineManager().getSetupMap().remove(player.getName());
+                if (!plugin.getMineManager().getSetupMap().containsKey(onClose.getPlayer().getName())) return;
+
+                plugin.getMineManager().getSetupMap().remove(onClose.getPlayer().getName());
+
+                plugin.getMessageManager().sendMessage(player, "Closed inventory",
+                        "{name}", mine.getName());
 
             });
 
@@ -236,11 +242,7 @@ public class InteractEvent implements Listener {
                                 continue;
                             }
 
-                            mineBlock.setMinPercentage(totalPercentage);
-
                             totalPercentage += mineBlock.getPercentage();
-
-                            mineBlock.setMaxPercentage(totalPercentage);
                         }
 
                         if (totalPercentage != 100) {

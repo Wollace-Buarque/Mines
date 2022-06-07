@@ -23,7 +23,8 @@ Messages:
 
   Blocks inventory: "{prefix} &eAbrindo inventário para você por os blocos da mina!"
 
-  Empty blocks: "{prefix} &cMina '{name}' deletada por você não ter colocado nenhum bloco!"
+  Empty blocks: "{prefix} &cMina '{name}' deletada porquê você não ter colocado nenhum bloco!"
+  Closed inventory: "{prefix} &cMina '{name}' deletada porquê você fechou o inventário!"
   Not contains block: "{prefix} &cNão possui esse bloco na mina!"
   Already contains block: "{prefix} &cJá possui esse bloco na mina!"
 

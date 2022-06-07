@@ -6,7 +6,7 @@ public class MineBlock {
 
     private final Material material;
     private final byte data;
-    private double percentage, minPercentage, maxPercentage;
+    private double percentage;
 
     public MineBlock(Material material, byte data, double percentage) {
         this.material = material;
@@ -32,22 +32,6 @@ public class MineBlock {
         if (percentage > 100) percentage = 100;
 
         this.percentage = percentage;
-    }
-
-    public double getMinPercentage() {
-        return minPercentage;
-    }
-
-    public void setMinPercentage(double minPercentage) {
-        this.minPercentage = minPercentage;
-    }
-
-    public double getMaxPercentage() {
-        return maxPercentage;
-    }
-
-    public void setMaxPercentage(double maxPercentage) {
-        this.maxPercentage = maxPercentage;
     }
 
 }

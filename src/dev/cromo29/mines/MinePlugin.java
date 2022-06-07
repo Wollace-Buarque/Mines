@@ -5,8 +5,8 @@ import dev.cromo29.mines.command.MineCommand;
 import dev.cromo29.mines.listeners.BreakBlockEvent;
 import dev.cromo29.mines.listeners.InteractEvent;
 import dev.cromo29.mines.listeners.QuitEvent;
-import dev.cromo29.mines.manager.MessageManager;
-import dev.cromo29.mines.manager.MineManager;
+import dev.cromo29.mines.managers.MessageManager;
+import dev.cromo29.mines.managers.MineManager;
 import dev.cromo29.mines.service.IMineService;
 
 public class MinePlugin extends DurkPlugin {
