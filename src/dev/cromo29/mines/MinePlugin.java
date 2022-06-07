@@ -3,6 +3,7 @@ package dev.cromo29.mines;
 import dev.cromo29.durkcore.api.DurkPlugin;
 import dev.cromo29.mines.command.MineCommand;
 import dev.cromo29.mines.listeners.BreakBlockEvent;
+import dev.cromo29.mines.listeners.CheckTaskEvent;
 import dev.cromo29.mines.listeners.InteractEvent;
 import dev.cromo29.mines.listeners.QuitEvent;
 import dev.cromo29.mines.managers.MessageManager;
@@ -19,11 +20,24 @@ public class MinePlugin extends DurkPlugin {
         this.mineManager = new MineManager();
 
         this.registerCommand(new MineCommand(this));
-        this.setListeners(new BreakBlockEvent(this), new InteractEvent(this), new QuitEvent(this));
+        this.setListeners(new BreakBlockEvent(this), new InteractEvent(this),
+                new QuitEvent(this), new CheckTaskEvent(getMineService()));
 
         getMineService().loadAll();
 
         mineManager.hologramTask();
+    }
+
+    @Override
+    public void onStop() {
+
+        getMineService().getMines().forEach(mine -> {
+            if (mine.getHologram() == null) return;
+
+            mine.getHologram().clear();
+            mine.getHologram().getHologramLines().forEach(hologramLine -> hologramLine.getArmorStand().remove());
+        });
+
     }
 
     public static MinePlugin get() {

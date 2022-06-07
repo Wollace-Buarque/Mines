@@ -3,8 +3,6 @@ package dev.cromo29.mines.listeners;
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.object.Mine;
 import dev.cromo29.mines.service.IMineService;
-import dev.cromo29.mines.utils.Utils;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,12 +32,12 @@ public class BreakBlockEvent implements Listener {
 
         if (mine == null) return;
 
-        int currentBlocks = 0; // Removido STREAM por problemas de desempenhos no Java 8
-        for (Block forBlock : Utils.getBlocksBetweenLocations(mine.getStart(), mine.getEnd())) {
-            if (forBlock != null && forBlock.getType() != Material.AIR) currentBlocks++;
-        }
+//        int currentBlocks = 0; // Removido STREAM por problemas de desempenhos no Java 8
+//        for (Block forBlock : Utils.getBlocksBetweenLocations(mine.getStart(), mine.getEnd())) {
+//            if (forBlock != null && forBlock.getType() != Material.AIR) currentBlocks++;
+//        }
 
-        mine.setCurrentBlocks(currentBlocks);
+        mine.setCurrentBlocks(mine.getCurrentBlocks() - 1);
 
         if (mine.getCurrentPercentage() <= mine.getResetPercentage()) mineService.resetMine(mine);
     }

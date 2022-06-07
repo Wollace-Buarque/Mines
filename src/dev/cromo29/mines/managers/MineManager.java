@@ -82,6 +82,11 @@ public class MineManager {
 
         Mine mine = mineService.getMine(name);
 
+        if (mine.getHologram() != null) {
+            mine.getHologram().clear();
+            mine.getHologram().getHologramLines().forEach(hologramLine -> hologramLine.getArmorStand().remove());
+        }
+
         mineService.deleteMine(mine);
         mineService.removeMine(mine, mineService.getMines().size() > 10);
 
@@ -360,8 +365,8 @@ public class MineManager {
 
                 if (mine.getHologram() == null) continue;
 
-                final Hologram hologram = mine.getHologram();
-                final List<HologramLine> hologramLines = hologram.getHologramLines();
+                Hologram hologram = mine.getHologram();
+                List<HologramLine> hologramLines = hologram.getHologramLines();
 
                 String line = " &fPorcentagem para resetar &d" + NumberUtil.formatNumber(mine.getCurrentPercentage()) + "% &fde &d" + NumberUtil.formatNumber(mine.getResetPercentage()) + "%&f! ";
 
@@ -376,7 +381,7 @@ public class MineManager {
 
             }
 
-        }, 140, 20);
+        }, 20, 20);
 
     }
 

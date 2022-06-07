@@ -143,7 +143,7 @@ public class MineServiceImpl implements IMineService {
                 if (workloadThread.hasEnded()) {
                     cancel();
 
-                    mine.setCurrentBlocks(mine.getCurrentBlocks());
+                    mine.setCurrentBlocks(mine.getMaxBlocks());
                     mine.setReseting(false);
 
                     for (Player player : Utils.getPlayersBetweenLocations(mine.getStart(), mine.getEnd())) {
@@ -191,12 +191,12 @@ public class MineServiceImpl implements IMineService {
                 Location start = LocationUtil.unserializeLocation(map.get("start").toString());
                 Location end = LocationUtil.unserializeLocation(map.get("end").toString());
                 double resetPercentage = (double) map.get("resetPercentage");
-                double currentBlocks = (double) map.get("currentBlocks");
                 double maxBlocks = (double) map.get("maxBlocks");
 
                 List<MineBlock> blocks = new LinkedList<>(Arrays.asList(new Gson().fromJson(map.get("blocks").toString(), MineBlock[].class)));
 
-                Mine mine = new Mine(name, start, end, blocks, resetPercentage, (long) currentBlocks, (long) maxBlocks);
+                Mine mine = new Mine(name, start, end, blocks, resetPercentage, 0, (long) maxBlocks);
+                mine.setCurrentBlocks(Utils.getCurrentBlocksFrom(mine));
 
                 if (map.get("hologram") != null) {
                     Hologram hologram = new Hologram(MinePlugin.get(), LocationUtil.unserializeLocation(map.get("hologram").toString()), mineName.toLowerCase());
@@ -205,6 +205,8 @@ public class MineServiceImpl implements IMineService {
 
                     hologram.setRemoveOnDisable(true);
                     hologram.setup();
+
+                    mine.setHologram(hologram);
                 }
 
                 setMine(mine);

@@ -121,7 +121,6 @@ public class Mine {
         map.put("start", LocationUtil.serializeSimpleLocation(start));
         map.put("end", LocationUtil.serializeSimpleLocation(end));
         map.put("resetPercentage", resetPercentage);
-        map.put("currentBlocks", currentBlocks);
         map.put("maxBlocks", maxBlocks);
         map.put("blocks", mineBlocks);
 
