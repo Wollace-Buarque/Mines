@@ -1,4 +1,4 @@
-package dev.cromo29.mines.object;
+package dev.cromo29.mines.objects;
 
 import org.bukkit.Material;
 

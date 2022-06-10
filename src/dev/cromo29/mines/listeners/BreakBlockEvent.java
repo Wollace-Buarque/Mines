@@ -1,7 +1,7 @@
 package dev.cromo29.mines.listeners;
 
 import dev.cromo29.mines.MinePlugin;
-import dev.cromo29.mines.object.Mine;
+import dev.cromo29.mines.objects.Mine;
 import dev.cromo29.mines.service.IMineService;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;

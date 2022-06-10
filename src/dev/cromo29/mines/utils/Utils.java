@@ -1,8 +1,8 @@
 package dev.cromo29.mines.utils;
 
 import dev.cromo29.durkcore.util.Cuboid;
-import dev.cromo29.mines.object.Mine;
-import dev.cromo29.mines.object.MineBlock;
+import dev.cromo29.mines.objects.Mine;
+import dev.cromo29.mines.objects.MineBlock;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

@@ -1,6 +1,6 @@
 package dev.cromo29.mines.service;
 
-import dev.cromo29.mines.object.Mine;
+import dev.cromo29.mines.objects.Mine;
 import org.bukkit.Location;
 
 import java.util.List;

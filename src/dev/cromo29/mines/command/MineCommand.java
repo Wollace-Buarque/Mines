@@ -2,7 +2,7 @@ package dev.cromo29.mines.command;
 
 import dev.cromo29.durkcore.api.DurkCommand;
 import dev.cromo29.mines.MinePlugin;
-import dev.cromo29.mines.object.Mine;
+import dev.cromo29.mines.objects.Mine;
 
 import java.util.List;
 import java.util.stream.Collectors;

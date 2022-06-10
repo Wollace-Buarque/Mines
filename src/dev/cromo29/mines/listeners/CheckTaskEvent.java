@@ -2,7 +2,7 @@ package dev.cromo29.mines.listeners;
 
 import dev.cromo29.durkcore.updater.UpdateType;
 import dev.cromo29.durkcore.updater.event.UpdaterEvent;
-import dev.cromo29.mines.object.Mine;
+import dev.cromo29.mines.objects.Mine;
 import dev.cromo29.mines.service.IMineService;
 import dev.cromo29.mines.utils.Utils;
 import org.bukkit.event.EventHandler;

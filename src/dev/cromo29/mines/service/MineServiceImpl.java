@@ -3,14 +3,15 @@ package dev.cromo29.mines.service;
 import com.google.gson.Gson;
 import dev.cromo29.durkcore.hologram.Hologram;
 import dev.cromo29.durkcore.specificutils.LocationUtil;
+import dev.cromo29.durkcore.specificutils.NumberUtil;
 import dev.cromo29.durkcore.specificutils.PlayerUtil;
 import dev.cromo29.durkcore.util.GsonManager;
 import dev.cromo29.durkcore.util.TXT;
 import dev.cromo29.mines.MinePlugin;
 import dev.cromo29.mines.blocks.PlacableBlock;
 import dev.cromo29.mines.blocks.WorkloadThread;
-import dev.cromo29.mines.object.Mine;
-import dev.cromo29.mines.object.MineBlock;
+import dev.cromo29.mines.objects.Mine;
+import dev.cromo29.mines.objects.MineBlock;
 import dev.cromo29.mines.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -201,7 +202,8 @@ public class MineServiceImpl implements IMineService {
                 if (map.get("hologram") != null) {
                     Hologram hologram = new Hologram(MinePlugin.get(), LocationUtil.unserializeLocation(map.get("hologram").toString()), mineName.toLowerCase());
 
-                    ((List<String>) map.get("hologramLines")).forEach(hologram::addLine);
+                    hologram.addLine(" &fMina &d" + mine.getName() + "&f! ");
+                    hologram.addLine(" &fPorcentagem para resetar &d" + NumberUtil.formatNumber(mine.getCurrentPercentage()) + "% &fde &d" + NumberUtil.formatNumber(mine.getResetPercentage()) + "%&f! ");
 
                     hologram.setRemoveOnDisable(true);
                     hologram.setup();
