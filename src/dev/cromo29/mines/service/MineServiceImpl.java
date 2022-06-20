@@ -185,7 +185,6 @@ public class MineServiceImpl implements IMineService {
         for (String mineName : storageFile.getDataPaths()) {
 
             try {
-
                 Map<String, Object> map = storageFile.get(mineName).asMap();
 
                 String name = map.get("name").toString();
@@ -212,7 +211,6 @@ public class MineServiceImpl implements IMineService {
                 }
 
                 setMine(mine);
-
             } catch (Exception exception) {
                 MinePlugin.get().log(" <c>Erro ao carregar mina: <f>" + mineName);
             }

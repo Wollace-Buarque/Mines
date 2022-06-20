@@ -12,6 +12,10 @@ import java.util.List;
 
 public class Utils {
 
+    public static String round(double value) {
+        return String.valueOf((double) Math.round(value * 10000) / 10000).replace(".", ",");
+    }
+
     public static long getCurrentBlocksFrom(Mine mine) {
         long blocks = 0;
 

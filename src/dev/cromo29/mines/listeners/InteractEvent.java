@@ -116,11 +116,10 @@ public class InteractEvent implements Listener {
 
                 if (onClick.getClickedInventory().getType() != InventoryType.PLAYER && onClick.getSlot() != 53) {
 
-                    MineBlock mineBlock = null;
-                    for (MineBlock mineBlock1 : mine.getMineBlocks()) {
-                        if (mineBlock1.getMaterial() == currentItem.getType() && mineBlock1.getData() == currentItem.getData().getData())
-                            mineBlock = mineBlock1;
-                    }
+                    MineBlock mineBlock = mine.getMineBlocks().stream()
+                            .filter(mineBlockFilter -> mineBlockFilter.getMaterial() == currentItem.getType() && mineBlockFilter.getData() == currentItem.getData().getData())
+                            .findFirst()
+                            .orElse(null);
 
                     if (mineBlock == null) {
                         plugin.getMessageManager().sendMessage(player, "Not contains block",
@@ -154,7 +153,7 @@ public class InteractEvent implements Listener {
                     double amountOfBlocksWirthPercentage = mineBlock.getPercentage() * mine.getMaxBlocks() / 100;
 
                     List<String> lore = new LinkedList<>(Arrays.asList("",
-                            " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
+                            " &7Porcentagem: &f" + Utils.round(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
                             "",
                             " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
                             " &7Clique com o &fdireito &7para remover &f2,5&7% ",
@@ -247,7 +246,8 @@ public class InteractEvent implements Listener {
 
                         if (totalPercentage != 100) {
                             plugin.getMessageManager().sendMessage(player, "Incorrect block percentage",
-                                    "{name}", mine.getName());
+                                    "{name}", mine.getName(),
+                                    "{percentage}", Utils.round(totalPercentage));
                             return;
                         }
 

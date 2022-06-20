@@ -34,4 +34,7 @@ public class MineBlock {
         this.percentage = percentage;
     }
 
+    public MineBlock clone() {
+        return new MineBlock(material, data, percentage);
+    }
 }

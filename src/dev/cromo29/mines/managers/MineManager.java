@@ -4,6 +4,7 @@ import dev.cromo29.durkcore.hologram.Hologram;
 import dev.cromo29.durkcore.hologram.HologramLine;
 import dev.cromo29.durkcore.inventory.Inv;
 import dev.cromo29.durkcore.specificutils.NumberUtil;
+import dev.cromo29.durkcore.util.GetValueFromPlayerChat;
 import dev.cromo29.durkcore.util.MakeItem;
 import dev.cromo29.durkcore.util.TXT;
 import dev.cromo29.mines.MinePlugin;
@@ -11,6 +12,7 @@ import dev.cromo29.mines.objects.Mine;
 import dev.cromo29.mines.objects.MineBlock;
 import dev.cromo29.mines.service.IMineService;
 import dev.cromo29.mines.service.MineServiceImpl;
+import dev.cromo29.mines.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -19,6 +21,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MineManager {
 
@@ -105,7 +108,7 @@ public class MineManager {
             return;
         }
 
-        String minesText = TXT.parse(TXT.createString(mines.stream().map(Mine::getName).toArray(String[]::new), 0, "<e>, <f>"));
+        String minesText = TXT.parse(TXT.createString(mines.stream().map(Mine::getName).toArray(String[]::new), 0, ", "));
 
         messageManager.sendMessage(sender, "Mines", "{mines}", minesText);
     }
@@ -133,6 +136,10 @@ public class MineManager {
     }
 
     public void editMine(Player player, String mineName) {
+        editMine(player, mineName, new ArrayList<>());
+    }
+
+    private void editMine(Player player, String mineName, List<MineBlock> mineBlocks) {
 
         if (!mineService.hasMine(mineName)) {
             messageManager.sendMessage(player, "Not created",
@@ -142,13 +149,16 @@ public class MineManager {
 
         Mine mine = mineService.getMine(mineName);
 
+        if (mineBlocks.isEmpty()) mineBlocks.addAll(mine.getMineBlocks());
+
+        List<MineBlock> clonedMineBlocks = mineBlocks.stream().map(MineBlock::clone).collect(Collectors.toList());
+
         plugin.getMessageManager().sendMessage(player, "Blocks inventory");
 
         Inv inv = new Inv(54, "Blocos da mina:");
         inv.setIgnorePlayerInventoryClick(false, true);
 
-        mine.getMineBlocks()
-                .stream()
+        mineBlocks.stream()
                 .sorted(Comparator.comparing(MineBlock::getPercentage).reversed())
                 .forEach(mineBlock -> {
 
@@ -160,18 +170,17 @@ public class MineManager {
                             .setLore(new ArrayList<>())
                             .addLoreList(
                                     "",
-                                    " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
+                                    " &7Porcentagem: &f" + Utils.round(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
                                     "",
                                     " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
                                     " &7Clique com o &fdireito &7para remover &f2,5&7% ",
-                                    " &7Clique segurando o &fshift &7para adicionar ou remover &f10&7% ",
+                                    " &7Clique segurando o &fshift &7para adicionar um valor customizavel ",
                                     "")
                             .build());
 
                 });
 
         inv.addClickHandler(onClick -> {
-
             ItemStack currentItem = onClick.getCurrentItem();
 
             if (currentItem == null || currentItem.getType() == Material.AIR || !currentItem.getType().isBlock())
@@ -179,11 +188,10 @@ public class MineManager {
 
             if (onClick.getClickedInventory().getType() != InventoryType.PLAYER && onClick.getSlot() != 53) {
 
-                MineBlock mineBlock = null;
-                for (MineBlock mineBlock1 : mine.getMineBlocks()) {
-                    if (mineBlock1.getMaterial() == currentItem.getType() && mineBlock1.getData() == currentItem.getData().getData())
-                        mineBlock = mineBlock1;
-                }
+                MineBlock mineBlock = clonedMineBlocks.stream()
+                        .filter(mineBlockFilter -> mineBlockFilter.getMaterial() == currentItem.getType() && mineBlockFilter.getData() == currentItem.getData().getData())
+                        .findFirst()
+                        .orElse(null);
 
                 if (mineBlock == null) {
                     plugin.getMessageManager().sendMessage(player, "Not contains block",
@@ -191,33 +199,57 @@ public class MineManager {
                     return;
                 }
 
-                if (onClick.isLeftClick()) {
+                double amountToChange = 2.5;
 
-                    double increaseAmount = onClick.isShiftClick() ? 10 : 2.5;
+                if (onClick.isShiftClick()) {
 
-                    if (mineBlock.getPercentage() + increaseAmount > 100) {
+                    player.closeInventory();
+
+                    plugin.getMessageManager().sendMessage(player, "Custom percentage",
+                            "{name}", mine.getName(),
+                            "{percentage}", Utils.round(mineBlock.getPercentage()));
+
+                    GetValueFromPlayerChat.getValueFrom(player, "cancelar", true, onGetValue -> {
+
+                        String valueString = onGetValue.getValueString();
+
+                        if (!NumberUtil.isValidDouble(valueString)) {
+                            plugin.getMessageManager().sendMessage(player, "Incorrect percentage",
+                                    "{name}", mine.getName());
+
+                            onGetValue.repeatGetValueFrom();
+                            return;
+                        }
+
+                        mineBlock.setPercentage(NumberUtil.getDouble(valueString));
+
+                        editMine(player, mineName, clonedMineBlocks);
+
+                    }, onCancel -> editMine(player, mineName, clonedMineBlocks));
+
+                } else if (onClick.isLeftClick()) {
+
+                    if (mineBlock.getPercentage() + amountToChange > 100) {
                         player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1, 1);
                         return;
                     }
 
-                    mineBlock.setPercentage(mineBlock.getPercentage() + increaseAmount);
+                    mineBlock.setPercentage(mineBlock.getPercentage() + amountToChange);
 
                 } else if (onClick.isRightClick()) {
 
-                    double increaseAmount = onClick.isShiftClick() ? 10 : 2.5;
-
-                    if (mineBlock.getPercentage() - increaseAmount < 0) {
+                    if (mineBlock.getPercentage() - amountToChange < 0) {
                         player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1, 1);
                         return;
                     }
 
-                    mineBlock.setPercentage(mineBlock.getPercentage() - increaseAmount);
+                    mineBlock.setPercentage(mineBlock.getPercentage() - amountToChange);
                 }
 
                 double amountOfBlocksWirthPercentage = mineBlock.getPercentage() * mine.getMaxBlocks() / 100;
 
                 List<String> lore = new LinkedList<>(Arrays.asList("",
-                        " &7Porcentagem: &f" + NumberUtil.format(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
+                        " &7Porcentagem: &f" + Utils.round(mineBlock.getPercentage()) + "&7% (Média: &f" + NumberUtil.formatNumberSimple(amountOfBlocksWirthPercentage) + "&7) ",
                         "",
                         " &7Clique com o &fesquerdo &7para adicionar &f2,5&7% ",
                         " &7Clique com o &fdireito &7para remover &f2,5&7% ",
@@ -238,7 +270,7 @@ public class MineManager {
 
             } else if (onClick.getClickedInventory().getType() == InventoryType.PLAYER) {
 
-                MineBlock mineBlock = mine.getMineBlocks().stream()
+                MineBlock mineBlock = clonedMineBlocks.stream()
                         .filter(mineBlockFilter -> mineBlockFilter.getMaterial() == currentItem.getType() && mineBlockFilter.getData() == currentItem.getData().getData())
                         .findFirst().orElse(null);
 
@@ -264,7 +296,7 @@ public class MineManager {
                         .build());
 
                 mineBlock = new MineBlock(currentItem.getType(), currentItem.getData().getData(), 0);
-                mine.getMineBlocks().add(mineBlock);
+                clonedMineBlocks.add(mineBlock);
             }
 
             player.playSound(player.getLocation(), Sound.CLICK, 1, 1);
@@ -283,7 +315,7 @@ public class MineManager {
                                 "")
                         .build(), onClick -> {
 
-                    if (mine.getMineBlocks().isEmpty()) {
+                    if (clonedMineBlocks.isEmpty()) {
                         plugin.getMessageManager().sendMessage(player, "Empty blocks",
                                 "{name}", mine.getName());
 
@@ -294,7 +326,7 @@ public class MineManager {
 
                     double totalPercentage = 0;
 
-                    Iterator<MineBlock> mineBlockIterator = mine.getMineBlocks().iterator();
+                    Iterator<MineBlock> mineBlockIterator = clonedMineBlocks.iterator();
                     while (mineBlockIterator.hasNext()) {
                         MineBlock mineBlock = mineBlockIterator.next();
 
@@ -308,9 +340,33 @@ public class MineManager {
 
                     if (totalPercentage != 100) {
                         plugin.getMessageManager().sendMessage(player, "Incorrect block percentage",
-                                "{name}", mine.getName());
+                                "{name}", mine.getName(),
+                                "{percentage}", totalPercentage);
                         return;
                     }
+
+                    player.closeInventory();
+
+                    boolean hasChanges = mineBlocks.stream()
+                            .allMatch(mineBlock -> {
+                                MineBlock result = clonedMineBlocks.stream()
+                                        .filter(clonedMineBlock -> clonedMineBlock.getMaterial() == mineBlock.getMaterial()
+                                                && clonedMineBlock.getData() == mineBlock.getData()
+                                                && clonedMineBlock.getPercentage() == mineBlock.getPercentage())
+                                        .findFirst()
+                                        .orElse(null);
+
+                                return result != null;
+                            });
+
+                    if (!hasChanges) {
+                        plugin.getMessageManager().sendMessage(player, "Mine not changed",
+                                "{name}", mine.getName());
+                        player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1, 1);
+                        return;
+                    }
+
+                    mine.setMineBlocks(clonedMineBlocks);
 
                     mineService.saveMine(mine, mineService.getMines().size() > 10);
                     mineService.resetMine(mine);
@@ -319,7 +375,6 @@ public class MineManager {
                             "{name}", mine.getName());
 
                     player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
-                    player.closeInventory();
                 });
 
         inv.open(player);
